@@ -1,0 +1,7 @@
+a {
+    color: var(--chakra-colors-gray-600) !important;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}

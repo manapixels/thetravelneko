@@ -1,0 +1,31 @@
+.sidenav {
+    width: 7.5rem;
+    
+    .nav-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .header {
+        text-transform: uppercase;
+        letter-spacing: 0.1rem;
+        font-size: 70%;
+        color: var(--chakra-colors-darkGray-700);
+        margin-bottom: .3rem;
+    }
+    a {
+        display: block;
+        font-size: 80%;
+        margin-bottom: .1rem;
+        color: var(--chakra-colors-darkGray-100) !important;
+
+        &.active {
+            color: var(--chakra-colors-darkGray-900) !important;
+            font-weight: bold;
+
+            &:before {
+                content: '·';
+                margin-right: .2rem;
+            }
+        }
+    }
+}
