@@ -12,14 +12,21 @@ const Guides = () => {
 }
 
 const dummyProfile = {
-   id: '111',
+   id: '123',
    name: 'Lora Srna',
-   location: 'Zagreb, Croatia',
    bio: "Hello, My name is Lora Srna. I'm from Northern Croatia, and a local of Zagreb and Varazdin. I've been working as a tour guide for a number of years now, guiding to every part of Croatia, as well as other countries in the region, such as Bosnia, Slovenia, Montenegro, and Austria.",
-   handle: 'lorasrna',
+   location: 'Zagreb, Croatia',
+   timeZoneUtc: 1,
    website: 'https://lorasrna.com',
    twitterUrl: 'https://twitter.com/lorasrna',
-   ownedBy: '0x359F508f40bd2f2ed2C17814b28c915a65B4F74f',
+   picture: 'https://i.imgur.com/M2CoXGx.jpg',
+   handle: 'lorasrna',
+   ownedBy: '0xe7804c37c13166fF0b37F5aE0BB07A3aEbb6e245',
+   languages: [{ name: 'Croatian', level: 5 }, { name: 'English', level: 3 }],
+   reviews: {
+      count: 11,
+      rating: 4,
+   },
 }
 
 export default Guides

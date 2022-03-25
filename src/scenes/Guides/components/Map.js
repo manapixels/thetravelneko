@@ -1,10 +1,14 @@
 import { useState } from 'react'
-import { Box, Input } from '@chakra-ui/react'
+import { Box, Button, Flex, Image, Input } from '@chakra-ui/react'
 import GoogleMapReact from 'google-map-react'
-
-// import AutoComplete from './AutoComplete'
-import Marker from './Marker'
 import styled from 'styled-components'
+
+import Marker from './Marker'
+import CalendarBlank from '../images/CalendarBlank.svg'
+import FlyingSaucer from '../images/FlyingSaucer.svg'
+import MapPin from '../images/MapPin.svg'
+import MagnifyingGlass from '../images/MagnifyingGlass.svg'
+import CountryHotspot from './CountryHotspot'
 
 const Wrapper = styled.div`
    width: 100%;
@@ -16,12 +20,51 @@ const Wrapper = styled.div`
    }
 `
 
+const SearchWrapper = styled.div`
+   display: flex;
+   width: 40rem;
+   border: 1px solid var(--chakra-colors-black);
+   border-radius: var(--chakra-radii-xl);
+
+   input {
+      border: none;
+
+      &:focus {
+         box-shadow: none;
+      }
+   }
+
+   .section-icon {
+      border-radius: var(--chakra-radii-xl);
+      background: var(--chakra-colors-lightGray-300);
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+   }
+`
+
 const defaultProps = {
    center: {
       lat: 59.95,
       lng: 30.33,
    },
-   zoom: 8,
+   zoom: 7,
+   hotspots: [
+      { id: 'SG', name: 'Singapore', lat: 1.4159, lng: 103.766449, count: 16 },
+      {
+         id: 'MY',
+         name: 'Malaysia',
+         lat: 1.481218,
+         lng: 103.444205,
+         count: 360,
+      },
+      {
+         id: 'ID',
+         name: 'Indonesia',
+         lat: 1.281218,
+         lng: 102.444205,
+         count: 1427,
+      },
+   ],
 }
 
 const Map = () => {
@@ -37,11 +80,16 @@ const Map = () => {
    const [draggable, setDraggable] = useState(true)
    const [mapApi, setMapApi] = useState()
    const [mapInstance, setMapInstance] = useState()
+   const [mapApiLoaded, setMapApiLoaded] = useState(false)
+
    const [searchInput, setSearchInput] = useState('')
+   const [fromDate, setFromDate] = useState('')
+   const [toDate, setToDate] = useState('')
 
    const apiHasLoaded = (map, maps) => {
       setMapApi(maps)
       setMapInstance(map)
+      setMapApiLoaded(true)
 
       _generateAddress()
 
@@ -67,6 +115,8 @@ const Map = () => {
    const _onChange = ({ center, zoom }) => {
       setCenter(center)
       setZoom(zoom)
+      console.log('onchange')
+      _generateAddress()
    }
 
    const _onClick = (value) => {
@@ -87,25 +137,30 @@ const Map = () => {
    }
 
    const _generateAddress = () => {
-      const geocoder = new mapApi.Geocoder()
+      if (mapApiLoaded) {
+         const geocoder = new mapApi.Geocoder()
 
-      geocoder.geocode(
-         { location: { lat: lat, lng: lng } },
-         (results, status) => {
-            console.log(results)
-            console.log(status)
-            if (status === 'OK') {
-               if (results[results.length - 1]) {
-                  setZoom(8)
-                  setAddress(results[results.length - 1].formatted_address)
+         geocoder.geocode(
+            { location: { lat: lat, lng: lng } },
+            (results, status) => {
+               console.log(results)
+               console.log(status)
+               if (status === 'OK') {
+                  if (results[results.length - 1]) {
+                     setAddress(results[results.length - 1].formatted_address)
+                  } else {
+                     window.alert('No results found')
+                  }
+               } else if (status === 'OVER_QUERY_LIMIT') {
+                  setTimeout(function () {
+                     _generateAddress()
+                  }, 300)
                } else {
-                  window.alert('No results found')
+                  window.alert('Geocoder failed due to: ' + status)
                }
-            } else {
-               window.alert('Geocoder failed due to: ' + status)
             }
-         }
-      )
+         )
+      }
    }
 
    return (
@@ -132,19 +187,55 @@ const Map = () => {
                      }
                      onClick={_onClick}
                   >
-                     <Marker text={address} lat={lat} lng={lng} />
+                     {/* <Marker text={address} lat={lat} lng={lng} /> */}
+                     {defaultProps.hotspots.map((country) => (
+                        <CountryHotspot {...country} key={country.id} />
+                     ))}
                   </GoogleMapReact>
                </Wrapper>
             )}
          </Box>
 
-         <Input
-            type="text"
-            placeholder="Search countries..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            minWidth="26rem"
-         />
+         <Flex my={6}>
+            <SearchWrapper>
+               <Image src={MapPin} className="section-icon" alt="" />
+               <Input
+                  type="text"
+                  placeholder="Search countries..."
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  width="12rem"
+               />
+               <Box alignItems="center" d="flex" mr={5}>
+                  <Button size="sm" p={1} variant="outline">
+                     <Image src={FlyingSaucer} alt="" />
+                  </Button>
+               </Box>
+               <Image src={CalendarBlank} className="section-icon" alt="" />
+               <Input
+                  type="text"
+                  placeholder="From"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  width="9rem"
+               />
+               <Box alignItems="center" d="flex">
+                  {' · '}
+               </Box>
+               <Input
+                  type="text"
+                  placeholder="To"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                  width="9rem"
+               />
+            </SearchWrapper>
+
+            <Button variant="black" ml={4} onClick={() => _generateAddress()}>
+               <Image src={MagnifyingGlass} alt="" />
+            </Button>
+         </Flex>
+
          {/* <AutoComplete map={mapInstance} mapApi={mapApi} addPlace={addPlace} /> */}
 
          {/* <div className="info-wrapper">

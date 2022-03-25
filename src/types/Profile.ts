@@ -3,6 +3,7 @@ export interface ProfileType {
    name: string
    bio?: string
    location?: string
+   timeZoneUtc?: number
    website?: string
    twitterUrl?: string
    picture?: string
@@ -17,5 +18,13 @@ export interface ProfileType {
       totalMirrors: number
       totalPublications: number
       totalCollects: number
+   }
+   languages?: Array<{
+      name: string
+      level: number
+   }>
+   reviews?: {
+      count: number
+      rating: number
    }
 }

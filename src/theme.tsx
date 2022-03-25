@@ -279,6 +279,11 @@ export const theme = extendTheme({
           color: "white",
           _hover: { bg: "gray.800" },
         },
+        white: {
+          bg: "white",
+          color: "darkGray.800",
+          _hover: { bg: "lightGray.200" },
+        },
         morePadding: {
           paddingLeft: 8,
           paddingRight: 8,
