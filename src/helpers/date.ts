@@ -1,3 +1,5 @@
+import { isWithinInterval } from 'date-fns'
+
 const today = new Date()
 const yesterday = ((d) => new Date(d.setDate(d.getDate() - 1)))(new Date())
 const tomorrow = ((d) => new Date(d.setDate(d.getDate() + 1)))(new Date())
@@ -137,20 +139,25 @@ export const timeSince = (dateStr: string) => {
 }
 
 export const calcCurrTimeInTimeZone = (offset: number) => {
-
    // create Date object for current location
-   let d = new Date();
-  
+   let d = new Date()
+
    // convert to msec
    // add local time zone offset
    // get UTC time in msec
-   let utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-  
+   let utc = d.getTime() + d.getTimezoneOffset() * 60000
+
    // create new Date object for different city
    // using supplied offset
-   let nd = new Date(utc + (3600000*offset));
-  
-   // return time as a string
-   return nd;
+   let nd = new Date(utc + 3600000 * offset)
 
+   // return time as a string
+   return nd
 }
+
+export const isWithinRange = (date: Date, range: Date[]) => {
+   return isWithinInterval(date, { start: range[0], end: range[1] })
+}
+export const isWithinRanges = (date: Date, ranges: Date[][]) => {
+   return ranges.some(range => isWithinRange(date, range));
+ }

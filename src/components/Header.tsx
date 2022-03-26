@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Box, Button, Image, Flex, Select } from '@chakra-ui/react'
 
 import logo from '../images/logo.svg'
+import { ReactComponent as HandGrabbing } from '../images/HandGrabbing.svg'
 import { currencyList } from '../constants'
 import { Link } from 'react-router-dom'
 
-const Header: React.FC = () => {
+const Header = () => {
    const [currency, setCurrency] = useState<string>(currencyList[0].code)
 
    return (
@@ -14,6 +15,8 @@ const Header: React.FC = () => {
          alignItems="stretch"
          borderBottom="1px solid var(--chakra-colors-gray-200)"
          px={8}
+         py={1}
+         background="white"
       >
          <Link to="/" style={{ display: "flex" }}><Image src={logo} alt="" /></Link>
 
@@ -34,7 +37,12 @@ const Header: React.FC = () => {
                   </option>
                ))}
             </Select>
-            <Button variant="black" borderRadius="1.5rem">Sign in using wallet</Button>
+            <Button variant="black" borderRadius="1.5rem" className="heartbeat-on-hover">
+               <Flex alignItems="center">
+                  <Box mr={1}>Paw in</Box>
+                  <HandGrabbing />
+               </Flex>
+            </Button>
          </Box>
       </Flex>
    )

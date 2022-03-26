@@ -4,6 +4,7 @@ import { ChakraProvider, Box, Flex } from '@chakra-ui/react'
 import { theme } from './theme'
 
 import CreateProfile from './scenes/Profile/CreateProfile'
+import UpdateProfile from './scenes/Profile/UpdateProfile'
 import ViewProfile from './scenes/Profile/ViewProfile'
 import ViewProfilesByAddress from './scenes/Profile/ViewProfilesByAddress'
 import Guides from './scenes/Guides'
@@ -25,6 +26,10 @@ export const App = () => {
                   <Route
                      path="/profile/create"
                      element={<CreateProfile />}
+                  />
+                  <Route
+                     path="/profile/:handle/update"
+                     element={<UpdateProfile />}
                   />
                   <Route
                      path="/profile/:handle"

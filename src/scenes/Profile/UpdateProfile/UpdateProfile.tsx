@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import {
    Box,
    FormControl,
@@ -11,10 +11,9 @@ import {
    Select,
    Heading,
    useToast,
-   FormHelperText,
+   FormHelperText
 } from '@chakra-ui/react'
 import { getTimeZones } from '@vvo/tzdb'
-import { createProfile } from '../../../services/profile/create-profile'
 import { updateProfile } from '../../../services/profile/update-profile'
 import { getProfiles } from '../../../services/profile/get-profiles'
 import { countryList } from '../../../constants'
@@ -22,53 +21,57 @@ import UploadImage from './components/UploadImage'
 
 const timeZones = getTimeZones()
 
-const CreateProfile = () => {
+const UpdateProfile = () => {
+   let { handle: handleParam } = useParams()
    const toast = useToast()
-   const navigate = useNavigate()
    const [isFetching, setIsFetching] = useState(false)
 
    // Fields
+   const [profileId, setProfileId] = useState()
    const [picture, setPicture] = useState()
-   const [handle, setHandle] = useState('')
    const [name, setName] = useState('')
    const [bio, setBio] = useState('')
    const [location, setLocation] = useState('')
    const [timeZoneUtc, setTimeZoneUtc] = useState(0)
    const [languages, setLanguages] = useState([])
 
-   const handleCreateProfile = async () => {
-      setIsFetching(true)
-      const profilePictureUri = picture || ''
-      let result = await createProfile(handle, profilePictureUri)
-      console.log(result)
+   useEffect(() => {
+      const handleGetProfile = async () => {
+         if (handleParam) {
+            const result = await getProfiles({ handles: [handleParam] })
+            if (
+               result &&
+               result.profiles &&
+               result.profiles.items &&
+               result.profiles.items[0]
+            ) {
+               const profile = result.profiles.items[0]
 
-      let profileId = await handleGetProfile()
+               if (profile.id) setProfileId(profile.id)
+               if (profile.name) setName(profile.name)
+               if (profile.bio) setBio(profile.bio)
+               if (profile.location) setLocation(profile.location)
+               if (profile.picture) setLocation(profile.picture)
+            }
+         }
+      }
+      handleGetProfile()
+   }, [])
 
-      result = await updateProfile(profileId, name, bio, location)
-      console.log(result)
+   const handleUpdateProfile = async () => {
+      if (profileId) {
+         setIsFetching(true)
+         let result = await updateProfile(profileId, name, bio, location)
+         console.log(result)
 
-      toast({
-         title: 'Profile updated',
-         status: 'success',
-         duration: 5000,
-         position: 'top',
-         isClosable: true,
-      })
-
-      navigate(`/profile/${handle}`)
-
-      setIsFetching(false)
-   }
-
-   const handleGetProfile = async () => {
-      const result = await getProfiles({ handles: [handle] })
-      if (
-         result &&
-         result.profiles &&
-         result.profiles.items &&
-         result.profiles.items[0]
-      ) {
-         return result.profiles.items[0].id
+         toast({
+            title: 'Profile updated',
+            status: 'success',
+            duration: 5000,
+            position: 'top',
+            isClosable: true,
+         })
+         setIsFetching(false)
       }
    }
 
@@ -102,8 +105,8 @@ const CreateProfile = () => {
                d="inline-block"
                width="auto"
                size="lg"
-               value={handle}
-               onChange={(e) => setHandle(e.target.value)}
+               disabled={true}
+               value={handleParam}
             />
          </FormControl>
 
@@ -121,7 +124,7 @@ const CreateProfile = () => {
          </FormControl>
 
          <FormControl d="inline-block" mb={3}>
-            <FormLabel>
+         <FormLabel>
                <Flex justifyContent="space-between" alignItems="center">
                   About you{' '}
                   <FormHelperText>
@@ -140,6 +143,7 @@ const CreateProfile = () => {
                size="lg"
                onChange={(e) => setBio(e.target.value)}
             />
+            <FormHelperText>{500 - bio.length} characters left</FormHelperText>
          </FormControl>
 
          <FormControl d="inline-block" width="auto" mb={3}>
@@ -182,13 +186,13 @@ const CreateProfile = () => {
             variant="black"
             isLoading={isFetching}
             spinnerPlacement="start"
-            loadingText="Creating"
-            onClick={() => handleCreateProfile()}
+            loadingText="Updating"
+            onClick={() => handleUpdateProfile()}
          >
-            Create Profile
+            Update Profile
          </Button>
       </Box>
    )
 }
 
-export default CreateProfile
+export default UpdateProfile

@@ -25,7 +25,7 @@ const Circle = styled.div`
       background: var(--chakra-colors-lightGray-500);
       border: 2px solid var(--chakra-colors-darkGray-100);
       z-index: -1;
-      transition: transform 0.3s ease-in-out 0s, background 0.3s ease-in-out 0s;
+      transition: transform 0.2s ease-in-out 0s, background 0.2s ease-in-out 0s;
    }
 
    &:hover {

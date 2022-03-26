@@ -1,18 +1,13 @@
 import { useState } from 'react'
-import { Box, Button, Flex, Image, Input } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import GoogleMapReact from 'google-map-react'
 import styled from 'styled-components'
 
-import Marker from './Marker'
-import CalendarBlank from '../images/CalendarBlank.svg'
-import FlyingSaucer from '../images/FlyingSaucer.svg'
-import MapPin from '../images/MapPin.svg'
-import MagnifyingGlass from '../images/MagnifyingGlass.svg'
 import CountryHotspot from './CountryHotspot'
 
 const Wrapper = styled.div`
    width: 100%;
-   height: 15rem;
+   height: 85vh;
    div {
       div {
          border-radius: 0.5rem;
@@ -20,34 +15,12 @@ const Wrapper = styled.div`
    }
 `
 
-const SearchWrapper = styled.div`
-   display: flex;
-   width: 40rem;
-   border: 1px solid var(--chakra-colors-black);
-   border-radius: var(--chakra-radii-xl);
-
-   input {
-      border: none;
-
-      &:focus {
-         box-shadow: none;
-      }
-   }
-
-   .section-icon {
-      border-radius: var(--chakra-radii-xl);
-      background: var(--chakra-colors-lightGray-300);
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-   }
-`
-
 const defaultProps = {
    center: {
-      lat: 59.95,
-      lng: 30.33,
+      lat: 1.4159,
+      lng: 103.766449,
    },
-   zoom: 7,
+   zoom: 9,
    hotspots: [
       { id: 'SG', name: 'Singapore', lat: 1.4159, lng: 103.766449, count: 16 },
       {
@@ -60,14 +33,14 @@ const defaultProps = {
       {
          id: 'ID',
          name: 'Indonesia',
-         lat: 1.281218,
-         lng: 102.444205,
+         lat: 1.05218,
+         lng: 104.144205,
          count: 1427,
       },
    ],
 }
 
-const Map = () => {
+const Map = ({ setAddress }) => {
    const [center, setCenter] = useState({
       lat: defaultProps.center.lat,
       lng: defaultProps.center.lng,
@@ -75,16 +48,11 @@ const Map = () => {
    const [lat, setLat] = useState(defaultProps.center.lat)
    const [lng, setLng] = useState(defaultProps.center.lng)
    const [zoom, setZoom] = useState(defaultProps.zoom)
-   const [address, setAddress] = useState('')
    const [places, setPlaces] = useState([])
    const [draggable, setDraggable] = useState(true)
    const [mapApi, setMapApi] = useState()
    const [mapInstance, setMapInstance] = useState()
    const [mapApiLoaded, setMapApiLoaded] = useState(false)
-
-   const [searchInput, setSearchInput] = useState('')
-   const [fromDate, setFromDate] = useState('')
-   const [toDate, setToDate] = useState('')
 
    const apiHasLoaded = (map, maps) => {
       setMapApi(maps)
@@ -143,8 +111,6 @@ const Map = () => {
          geocoder.geocode(
             { location: { lat: lat, lng: lng } },
             (results, status) => {
-               console.log(results)
-               console.log(status)
                if (status === 'OK') {
                   if (results[results.length - 1]) {
                      setAddress(results[results.length - 1].formatted_address)
@@ -195,46 +161,6 @@ const Map = () => {
                </Wrapper>
             )}
          </Box>
-
-         <Flex my={6}>
-            <SearchWrapper>
-               <Image src={MapPin} className="section-icon" alt="" />
-               <Input
-                  type="text"
-                  placeholder="Search countries..."
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  width="12rem"
-               />
-               <Box alignItems="center" d="flex" mr={5}>
-                  <Button size="sm" p={1} variant="outline">
-                     <Image src={FlyingSaucer} alt="" />
-                  </Button>
-               </Box>
-               <Image src={CalendarBlank} className="section-icon" alt="" />
-               <Input
-                  type="text"
-                  placeholder="From"
-                  value={fromDate}
-                  onChange={(e) => setFromDate(e.target.value)}
-                  width="9rem"
-               />
-               <Box alignItems="center" d="flex">
-                  {' · '}
-               </Box>
-               <Input
-                  type="text"
-                  placeholder="To"
-                  value={toDate}
-                  onChange={(e) => setToDate(e.target.value)}
-                  width="9rem"
-               />
-            </SearchWrapper>
-
-            <Button variant="black" ml={4} onClick={() => _generateAddress()}>
-               <Image src={MagnifyingGlass} alt="" />
-            </Button>
-         </Flex>
 
          {/* <AutoComplete map={mapInstance} mapApi={mapApi} addPlace={addPlace} /> */}
 
