@@ -6,7 +6,8 @@ export function truncateString(str: string, num: number) {
 }
 
 
-export function truncateAddress(str: string) {
+export function truncateAddress(str: string | undefined) {
+   if (str === undefined) return str
    if (str.length <= 12) {
       return str
    }

@@ -102,7 +102,11 @@ const dummyProfile = {
    timeZoneUtc: 1,
    website: 'https://lorasrna.com',
    twitterUrl: 'https://twitter.com/lorasrna',
-   picture: 'https://i.imgur.com/M2CoXGx.jpg',
+   picture: {
+      original: {
+         url: 'https://i.imgur.com/M2CoXGx.jpg'
+      }
+   },
    handle: 'lorasrna',
    ownedBy: '0xe7804c37c13166fF0b37F5aE0BB07A3aEbb6e245',
    languages: [

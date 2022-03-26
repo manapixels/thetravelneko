@@ -162,7 +162,7 @@ export const theme = extendTheme(
       components: {
          Divider: {
             baseStyle: {
-               borderColor: 'neutral.200',
+               borderColor: 'lightGray.200',
                opacity: 1,
             },
          },
@@ -170,32 +170,32 @@ export const theme = extendTheme(
             variants: {
                micro: {
                   fontSize: '0.5rem',
-                  color: 'neutral.400',
+                  color: 'lightGray.400',
                   fontWeight: 'semibold',
                },
                caption: {
                   fontSize: '0.75rem',
-                  color: 'neutral.400',
+                  color: 'lightGray.400',
                   fontWeight: 'semibold',
                },
                body4: {
                   fontSize: '1rem',
-                  color: 'neutral.700',
+                  color: 'lightGray.700',
                   fontWeight: 'semibold',
                },
                body3: {
                   fontSize: '1.25rem',
-                  color: 'neutral.700',
+                  color: 'lightGray.700',
                   fontWeight: 'semibold',
                },
                body2: {
                   fontSize: '1.5rem',
-                  color: 'neutral.900',
+                  color: 'lightGray.900',
                   fontWeight: 'semibold',
                },
                body1: {
                   fontSize: '1.75rem',
-                  color: 'neutral.900',
+                  color: 'lightGray.900',
                   fontWeight: 'semibold',
                },
             },
@@ -203,7 +203,7 @@ export const theme = extendTheme(
          Heading: {
             variants: {
                subheader: {
-                  color: 'neutral.400',
+                  color: 'lightGray.400',
                   fontWeight: 'semibold',
                   fontSize: '1.5rem',
                   letterSpacing: '4px',
@@ -211,42 +211,42 @@ export const theme = extendTheme(
                header6: {
                   fontSize: '1.25rem',
                   fontWeight: 'semibold',
-                  color: 'neutral.900',
+                  color: 'lightGray.900',
                },
                header5: {
                   fontSize: '1.5rem',
                   fontWeight: 'semibold',
-                  color: 'neutral.900',
+                  color: 'lightGray.900',
                },
                header4: {
                   fontSize: '1.75rem',
                   fontWeight: 'semibold',
-                  color: 'neutral.900',
+                  color: 'lightGray.900',
                },
                header3: {
                   fontSize: '2rem',
                   fontWeight: 'semibold',
-                  color: 'neutral.900',
+                  color: 'lightGray.900',
                },
                header2: {
                   fontSize: '2.25rem',
                   fontWeight: 'semibold',
-                  color: 'neutral.900',
+                  color: 'lightGray.900',
                },
                header1: {
                   fontSize: '2.5rem',
                   fontWeight: 'semibold',
-                  color: 'neutral.900',
+                  color: 'lightGray.900',
                },
                big2: {
                   fontSize: '4rem',
                   fontWeight: 'semibold',
-                  color: 'neutral.900',
+                  color: 'lightGray.900',
                },
                big1: {
                   fontSize: '5rem',
                   fontWeight: 'semibold',
-                  color: 'neutral.900',
+                  color: 'lightGray.900',
                },
                huge: {
                   fontSize: '8rem',

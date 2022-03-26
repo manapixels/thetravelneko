@@ -10,7 +10,7 @@ const ProfileItem = ({ profile }: { profile: ProfileType }) => {
       location,
       website,
       twitterUrl,
-      picture,
+      picture: picObject,
       handle,
       coverPicture,
       ownedBy,
@@ -26,9 +26,17 @@ const ProfileItem = ({ profile }: { profile: ProfileType }) => {
       totalCollects,
    } = stats || {}
 
+   const picture = picObject && picObject.original && picObject.original.url
+
    return (
       <Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
-         <Image src={picture} alt="" />
+         {picture && (
+            <Image
+               src={`https://gateway.pinata.cloud/ipfs/${picture}`}
+               alt=""
+               width="4.4rem"
+            />
+         )}
 
          <Box p="6">
             <Box display="flex" alignItems="baseline">

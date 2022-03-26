@@ -7,17 +7,19 @@ import {
    Button,
    FormLabel,
    Flex,
+   Image,
    Textarea,
    Select,
    Heading,
    useToast,
-   FormHelperText
+   FormHelperText,
 } from '@chakra-ui/react'
 import { getTimeZones } from '@vvo/tzdb'
 import { updateProfile } from '../../../services/profile/update-profile'
 import { getProfiles } from '../../../services/profile/get-profiles'
 import { countryList } from '../../../constants'
 import UploadImage from './components/UploadImage'
+import { setProfileImageUriNormal } from '../../../services/profile/set-profile-image-uri-normal'
 
 const timeZones = getTimeZones()
 
@@ -28,7 +30,7 @@ const UpdateProfile = () => {
 
    // Fields
    const [profileId, setProfileId] = useState()
-   const [picture, setPicture] = useState()
+   const [picture, setPicture] = useState<string>()
    const [name, setName] = useState('')
    const [bio, setBio] = useState('')
    const [location, setLocation] = useState('')
@@ -51,18 +53,41 @@ const UpdateProfile = () => {
                if (profile.name) setName(profile.name)
                if (profile.bio) setBio(profile.bio)
                if (profile.location) setLocation(profile.location)
-               if (profile.picture) setLocation(profile.picture)
+               if (
+                  profile.picture &&
+                  profile.picture.original &&
+                  profile.picture.original.url
+               ) {
+                  setPicture(profile.picture.original.url)
+               }
             }
          }
       }
       handleGetProfile()
    }, [])
 
+   const handleUpdatePhoto = async (ipfshash: string) => {
+      if (profileId && picture) {
+         setIsFetching(true)
+         let result = await setProfileImageUriNormal(profileId, ipfshash)
+         console.log('setProfileImageUriNormal', result)
+
+         toast({
+            title: 'Photo updated',
+            status: 'success',
+            duration: 5000,
+            position: 'top',
+            isClosable: true,
+         })
+         setIsFetching(false)
+      }
+   }
+
    const handleUpdateProfile = async () => {
       if (profileId) {
          setIsFetching(true)
          let result = await updateProfile(profileId, name, bio, location)
-         console.log(result)
+         console.log('updateProfile', result)
 
          toast({
             title: 'Profile updated',
@@ -88,13 +113,39 @@ const UpdateProfile = () => {
    }, [location])
 
    return (
-      <Box maxW="2xl">
+      <Box
+         maxW="2xl"
+         p={8}
+         border="1px solid var(--chakra-colors-lightGray-400)"
+         borderRadius="xl"
+         background="white"
+      >
          <Heading size="lg" mb="5">
-            Create your profile
+            Update your profile
          </Heading>
          <FormControl d="inline-block" mb={3}>
             <FormLabel>Display photo</FormLabel>
-            <UploadImage picture={picture} setPicture={setPicture} />
+            <Box position="relative">
+               <UploadImage
+                  picture={picture}
+                  setPicture={setPicture}
+                  handleUpdatePhoto={handleUpdatePhoto}
+               />
+               {picture && picture.length === 46 && (
+                  <Image
+                     src={`https://gateway.pinata.cloud/ipfs/${picture}`}
+                     alt=""
+                     width="4.4rem"
+                     height="4.4rem"
+                     margin="0.3rem"
+                     position="absolute"
+                     top={0}
+                     left={0}
+                     d="inline-block"
+                     borderRadius="50%"
+                  />
+               )}
+            </Box>
          </FormControl>
 
          <FormControl mb={3}>
@@ -124,7 +175,7 @@ const UpdateProfile = () => {
          </FormControl>
 
          <FormControl d="inline-block" mb={3}>
-         <FormLabel>
+            <FormLabel>
                <Flex justifyContent="space-between" alignItems="center">
                   About you{' '}
                   <FormHelperText>

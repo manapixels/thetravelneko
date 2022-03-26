@@ -6,7 +6,11 @@ export interface ProfileType {
    timeZoneUtc?: number
    website?: string
    twitterUrl?: string
-   picture?: string
+   picture?: {
+      original?: {
+         url: string
+      }
+   }
    handle: string
    coverPicture?: string
    ownedBy: string

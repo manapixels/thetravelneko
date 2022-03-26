@@ -48,11 +48,7 @@ const createSetProfileImageUriTypedData = (request: any) => {
   });
 };
 
-export const setProfileImageUriNormal = async () => {
-  const profileId = PROFILE_ID;
-  if (!profileId) {
-    throw new Error('Must define PROFILE_ID in the .env to run this');
-  }
+export const setProfileImageUriNormal = async (profileId: string, url: string) => {
 
   const address = getAddressFromSigner();
   console.log('set profile image uri normal: address', address);
@@ -62,7 +58,7 @@ export const setProfileImageUriNormal = async () => {
   // hard coded to make the code example clear
   const setProfileImageUriRequest = {
     profileId,
-    url: 'ipfs://QmSfyMcnh1wnJHrAWCBjZHapTS859oNSsuDFiAPPdAHgHP',
+    url,
   };
 
   const result = await createSetProfileImageUriTypedData(

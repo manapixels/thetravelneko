@@ -85,7 +85,13 @@ const CreateProfile = () => {
    }, [location])
 
    return (
-      <Box maxW="2xl">
+      <Box
+         maxW="2xl"
+         p={8}
+         border="1px solid var(--chakra-colors-lightGray-400)"
+         borderRadius="xl"
+         background="white"
+      >
          <Heading size="lg" mb="5">
             Create your profile
          </Heading>

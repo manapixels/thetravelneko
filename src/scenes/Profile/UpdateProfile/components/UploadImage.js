@@ -50,7 +50,7 @@ const UploadImageWrapper = styled.div`
    }
 `
 
-const UploadImage = ({ picture, setPicture }) => {
+const UploadImage = ({ picture, setPicture, handleUpdatePhoto }) => {
    const [selectedFile, setSelectedFile] = useState()
    const [previewImage, setPreviewImage] = useState()
 
@@ -76,11 +76,14 @@ const UploadImage = ({ picture, setPicture }) => {
             //handle response
             if (response && response.data && response.data.IpfsHash) {
                setPicture(response.data.IpfsHash)
+               handleUpdatePhoto(response.data.IpfsHash)
             }
          })
          .catch(function (error) {
             console.log('Pinata pin error')
          })
+
+         
    }
 
    return (

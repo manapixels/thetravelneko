@@ -7,7 +7,8 @@ import {
    Button,
    Select,
    Link,
-   Text
+   Text,
+   Divider,
 } from '@chakra-ui/react'
 import { useParams } from 'react-router-dom'
 import Calendar from 'react-calendar'
@@ -32,6 +33,7 @@ import {
    isWithinRanges,
    calcCurrTimeInTimeZone,
 } from '../../../helpers/date'
+import { truncateAddress } from '../../../helpers/truncateString'
 
 const today = new Date()
 const currMonth = today.getMonth()
@@ -40,9 +42,19 @@ const oneYearBeforeNow = subYears(today, 1)
 const disabledRanges = [[oneYearBeforeNow, today]]
 
 const CoverImage = styled.div`
-   background: url(${worldMap});
+   background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,1) 100%), url(${worldMap});
    height: 13rem;
    border-radius: var(--chakra-radii-lg);
+`
+const InfoSection = styled.div`
+   display: flex;
+   align-items: center;
+   margin-bottom: .5rem;
+`
+const InfoSectionTitle = styled.div`
+   width: 10rem;
+   font-size: 80%;
+   color: var(--chakra-colors-lightGray-900);
 `
 const CalendarWrapper = styled.div`
    button.react-calendar__tile {
@@ -125,8 +137,9 @@ const MonthAvailability = styled.div`
 `
 
 const languages = [
-   { name: 'Croatian', level: 5 },
-   { name: 'English', level: 3 },
+   { name: 'English', level: 5 },
+   { name: 'Mandarin Chinese', level: 5 },
+   { name: 'German', level: 1 },
 ]
 
 const reviews = {
@@ -164,12 +177,13 @@ const ViewProfile = () => {
       timeZoneUtc,
       website,
       twitterUrl,
-      picture,
+      picture: picObject,
       handle,
       coverPicture,
       ownedBy,
       stats,
    } = profile || {}
+   const picture = picObject && picObject.original && picObject.original.url
    const {
       totalFollowers,
       totalFollowing,
@@ -192,123 +206,157 @@ const ViewProfile = () => {
 
    return (
       <Flex>
-         <Box flex="1" p={8} mr={8}
+         <Box
+            flex="1"
+            mr={8}
             border="1px solid var(--chakra-colors-lightGray-400)"
             borderRadius="xl"
-            background="white" position="relative">
-            <Image src={`https://gateway.pinata.cloud/ipfs/${picture}`} alt="" width="4.4rem" />
+            background="white"
+            position="relative"
+         >
             <CoverImage />
 
-            <Flex justifyContent="space-between" mt={3}>
-               <Flex alignItems="center">
-                  <Box fontSize="xl" mr={4}>{name}</Box>
-                  <Box fontSize="sm" color="lightGray.900">
-                     @{handle}
-                  </Box>
-               </Flex>
-               <Flex
-                  color="lightGray.900"
-                  alignItems="center"
-                  fontSize="md"
-                  mb={1}
-               >
-                  <MapPin height="1rem" stroke="var(--chakra-colors-lightGray-500)" />
-                  <Box ml={1} mr={1}>
-                     {location}
+            <Box px={12} pb={12}>
+               {picture && (
+                  <Image
+                     src={`https://gateway.pinata.cloud/ipfs/${picture}`}
+                     alt=""
+                     width="5rem"
+                     borderRadius="50%"
+                  />
+               )}
+               <Flex justifyContent="space-between" mt={3}>
+                  <Box mb={5}>
+                     <Flex alignItems="center" mb={2}>
+                        <Box fontSize="2xl" mr={2} fontWeight="bold" color="darkGray.700">
+                           {name}
+                        </Box>
+                        <Box fontSize="sm" color="lightGray.900">
+                           @{handle}
+                        </Box>
+                     </Flex>
+                     <Flex
+                        color="lightGray.900"
+                        alignItems="center"
+                        fontSize="sm"
+                        mb={1}
+                     >
+                        <MapPin
+                           height="1rem"
+                           stroke="var(--chakra-colors-lightGray-500)"
+                        />
+                        <Box>
+                           {location}
+                        </Box>
+                        <Box>
+                           {timeZoneUtc &&
+                              `(${formatAMPM(
+                                 calcCurrTimeInTimeZone(timeZoneUtc)
+                              )})`}
+                        </Box>
+                     </Flex>
                   </Box>
                   <Box>
-                     {timeZoneUtc &&
-                        `(${formatAMPM(calcCurrTimeInTimeZone(timeZoneUtc))})`}
+                     <Button mr={2} px={1}>
+                        <ChatTeardropDots width="1.5rem" />
+                     </Button>
+                     <Button mr={2} px={1}>
+                        <Export width="1.5rem" />
+                     </Button>
+                     <Button mr={2} px={1}>
+                        <Heart width="1.5rem" />
+                     </Button>
+                     <Link href={`/profile/${handle}/update`}>
+                     <Button variant="outline">
+                        Edit Profile
+                     </Button>
+                     </Link>
                   </Box>
                </Flex>
-               <Box>
-                  <Button variant="white" px={1}><ChatTeardropDots /></Button>
-                  <Button variant="white" px={1}><Export /></Button>
-                  <Button variant="white" px={1}><Heart /></Button>
-               </Box>
-            </Flex>
 
-            <Flex alignItems="center">
-               <Box width="10rem">Tours Organised</Box>
-               <Flex alignItems="center">
-                  4
-                  <Box color="lightGray.700" fontSize="sm">
-                     First tour: Jan 1, 2022
-                  </Box>
-               </Flex>
-            </Flex>
-            <Flex alignItems="center">
-               <Box width="10rem">Languages</Box>
-               <Flex alignItems="center">
-                  {languages.map((l) => (
-                     <Flex alignItems="center" mr={2} key={l.name}>
-                        <Box color="darkGray.400" fontSize="md" mr={1}>
-                           {l.name}
-                        </Box>
-                        <Flex>
-                           {Array.from(Array(5), (e, i) => (
-                              <Box
-                                 key={`${l.name}-${i}`}
-                                 borderRadius=".2rem"
-                                 bg={
-                                    l.level < i + 1
-                                       ? 'var(--chakra-colors-lightGray-500)'
-                                       : 'var(--chakra-colors-darkGray-400)'
-                                 }
-                                 width=".15rem"
-                                 height=".7rem"
-                                 mr=".15rem"
-                              ></Box>
-                           ))}
+               <InfoSection>
+                  <InfoSectionTitle>Tours Organised</InfoSectionTitle>
+                  <Flex alignItems="center">
+                     <Box fontSize="lg" mr={4}>4</Box>
+                     <Box color="lightGray.700" fontSize="sm">
+                        First tour: Jan 1, 2022
+                     </Box>
+                  </Flex>
+               </InfoSection>
+               <InfoSection>
+                  <InfoSectionTitle>Languages</InfoSectionTitle>
+                  <Flex alignItems="center">
+                     {languages.map((l) => (
+                        <Flex alignItems="center" mr={3} key={l.name}>
+                           <Box color="darkGray.400" fontSize="md" mr={1}>
+                              {l.name}
+                           </Box>
+                           <Flex>
+                              {Array.from(Array(5), (e, i) => (
+                                 <Box
+                                    key={`${l.name}-${i}`}
+                                    borderRadius=".2rem"
+                                    bg={
+                                       l.level < i + 1
+                                          ? 'var(--chakra-colors-lightGray-500)'
+                                          : 'var(--chakra-colors-darkGray-400)'
+                                    }
+                                    width=".15rem"
+                                    height=".7rem"
+                                    mr=".15rem"
+                                 ></Box>
+                              ))}
+                           </Flex>
                         </Flex>
-                     </Flex>
-                  ))}
-               </Flex>
-            </Flex>
-            <Flex alignItems="center">
-               <Box width="10rem">Reviews</Box>
-               <Flex alignItems="center">
-               {reviews && (
-                     <Flex alignItems="center" mb={1}>
-                        {reviews.rating !== null &&
-                           Array.from(Array(5), (e, i) => (
-                              <Star
-                                 fill={
-                                    reviews.rating < i + 1
-                                       ? 'var(--chakra-colors-lightGray-400)'
-                                       : 'var(--chakra-colors-warning-300)'
-                                 }
-                                 style={{
-                                    marginRight: '.3rem',
-                                    height: '0.9rem',
-                                    width: '0.9rem',
-                                 }}
-                                 key={`star-${i}`}
-                              />
-                           ))}
-                        <Box color="lightGray.900" fontSize="md">
-                           {reviews.count} reviews
-                        </Box>
-                     </Flex>
-                  )}
-               </Flex>
-            </Flex>
-            <Flex alignItems="center">
-               <Box width="10rem">Badges</Box>
-               <Flex alignItems="center">
-                  <BadgeGoogleLocalGuide />
-                  <BadgeNekoguide />
-                  <BadgeVerifiedUser />
-               </Flex>
-            </Flex>
+                     ))}
+                  </Flex>
+               </InfoSection>
+               <InfoSection>
+                  <InfoSectionTitle>Reviews</InfoSectionTitle>
+                  <Flex alignItems="center">
+                     {reviews && (
+                        <Flex alignItems="center" mb={1}>
+                           {reviews.rating !== null &&
+                              Array.from(Array(5), (e, i) => (
+                                 <Star
+                                    fill={
+                                       reviews.rating < i + 1
+                                          ? 'var(--chakra-colors-lightGray-400)'
+                                          : 'var(--chakra-colors-warning-300)'
+                                    }
+                                    style={{
+                                       marginRight: '.3rem',
+                                       height: '0.9rem',
+                                       width: '0.9rem',
+                                    }}
+                                    key={`star-${i}`}
+                                 />
+                              ))}
+                           <Box color="lightGray.900" fontSize="sm" ml={2}>
+                              {reviews.count} reviews
+                           </Box>
+                        </Flex>
+                     )}
+                  </Flex>
+               </InfoSection>
+               <InfoSection>
+                  <InfoSectionTitle>Badges</InfoSectionTitle>
+                  <Flex alignItems="center">
+                     <Box mr={3}><BadgeGoogleLocalGuide /></Box>
+                     <Box mr={3}><BadgeNekoguide /></Box>
+                     <Box><BadgeVerifiedUser /></Box>
+                  </Flex>
+               </InfoSection>
 
-            <Box>
-               <Flex justifyContent="space-between" alignItems="center">
-                  <Heading>About me</Heading>
-                  <Box color="lightGray.900">Owned by {ownedBy}</Box>
-               </Flex>
-               <Text>{bio}</Text>
-               
+               <Divider my={8} />
+
+               <Box>
+                  <Flex justifyContent="space-between" alignItems="center" mb={5}>
+                     <Heading size="md">About me</Heading>
+                     <Box color="lightGray.900" fontSize="sm">Owned by <Link href={`https://polygonscan.com/address/${ownedBy}`}>{truncateAddress(ownedBy)}</Link></Box>
+                  </Flex>
+                  <Text>{bio}</Text>
+               </Box>
             </Box>
          </Box>
 
@@ -318,6 +366,7 @@ const ViewProfile = () => {
             border="1px solid var(--chakra-colors-lightGray-400)"
             borderRadius="xl"
             background="white"
+            alignSelf="flex-start"
          >
             <Heading size="md" mb={5}>
                Availability

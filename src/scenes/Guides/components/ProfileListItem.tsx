@@ -111,12 +111,14 @@ const ProfileListItem = ({ profile }: { profile: ProfileType }) => {
       timeZoneUtc,
       website,
       twitterUrl,
-      picture,
+      picture: picObject,
       handle,
       ownedBy,
       languages,
       reviews,
    } = profile
+
+   const picture = picObject && picObject.original && picObject.original.url
 
    const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -132,7 +134,13 @@ const ProfileListItem = ({ profile }: { profile: ProfileType }) => {
             <Flex mb={3}>
                <Box mr={4}>
                   <AvatarWrapper onClick={onOpen}>
-                     <Image src={picture} alt="" width="4.4rem" />
+                     {picture && (
+                        <Image
+                           src={`https://gateway.pinata.cloud/ipfs/${picture}`}
+                           alt=""
+                           width="4.4rem"
+                        />
+                     )}
                      <Play />
                      <Box className="overlay"></Box>
                   </AvatarWrapper>
