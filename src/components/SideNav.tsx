@@ -9,6 +9,7 @@ const SideNav = () => {
             <Box className="header">FIND</Box>
             <NavLink to="/guides">Local tour guides</NavLink>
             <NavLink to="/tours">Local tours</NavLink>
+            <NavLink to="/accommodations">Accommodations</NavLink>
             <NavLink to="/buddies">Travel buddies</NavLink>
             <NavLink to="/drivers">Drivers</NavLink>
          </Box>
