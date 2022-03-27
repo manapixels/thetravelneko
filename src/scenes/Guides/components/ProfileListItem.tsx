@@ -17,6 +17,7 @@ import {
    TabList,
    TabPanels,
    TabPanel,
+   Link,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
 
@@ -163,7 +164,7 @@ const ProfileListItem = ({ profile }: { profile: ProfileType }) => {
                <Box>
                   <Flex mb={1} alignItems="center">
                      <Box fontSize="110%" mr={2}>
-                        {name}
+                        <Link href={`/profile/${handle}`}>{name}</Link>
                      </Box>
                      <Box color="lightGray.900" fontSize="md">
                         @{handle}
@@ -266,8 +267,10 @@ const ProfileListItem = ({ profile }: { profile: ProfileType }) => {
             <Button d="block" variant="white">
                <Image src={Heart} alt="" />
             </Button>
-            <Button d="block" variant="black">
-               <Image src={ArrowRight} alt="" />
+            <Button d="block" variant="black" >
+               <Link href={`/profile/${handle}`}>
+               <Image src={ArrowRight} alt="" py="0.5rem" />
+               </Link>
             </Button>
          </SideButtonsWrapper>
 
