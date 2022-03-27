@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Box, Button, Image, Flex, Select } from '@chakra-ui/react'
+import { Box, Button, Image, Flex, Select, Link } from '@chakra-ui/react'
 
 import logo from '../images/logo.svg'
 import { ReactComponent as HandGrabbing } from '../images/HandGrabbing.svg'
 import { currencyList } from '../constants'
-import { Link } from 'react-router-dom'
+import { Link as RLink } from 'react-router-dom'
 
 const Header = () => {
    const [currency, setCurrency] = useState<string>(currencyList[0].code)
@@ -18,7 +18,7 @@ const Header = () => {
          py={1}
          background="white"
       >
-         <Link to="/" style={{ display: "flex" }}><Image src={logo} alt="" /></Link>
+         <RLink to="/" style={{ display: "flex" }}><Image src={logo} alt="" /></RLink>
 
          <Box p={2}>
             <Select
@@ -37,9 +37,12 @@ const Header = () => {
                   </option>
                ))}
             </Select>
+            <Button borderRadius="1.5rem" className="heartbeat-on-hover" as={Link} href="/profile/create" mr={3}>
+                  Create Profile
+            </Button>
             <Button variant="black" borderRadius="1.5rem" className="heartbeat-on-hover">
                <Flex alignItems="center">
-                  <Box mr={1}>Paw in</Box>
+                  <Box mr={1}>Sign in</Box>
                   <HandGrabbing />
                </Flex>
             </Button>

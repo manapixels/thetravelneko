@@ -8,17 +8,17 @@ const SideNav = () => {
          <Box className="nav-section">
             <Box className="header">FIND</Box>
             <NavLink to="/guides">Local tour guides</NavLink>
-            <NavLink to="/tours">Local tours</NavLink>
-            <NavLink to="/accommodations">Accommodations</NavLink>
-            <NavLink to="/buddies">Travel buddies</NavLink>
-            <NavLink to="/drivers">Drivers</NavLink>
+            <NavLink to="/guides">Local tours</NavLink>
+            <NavLink to="/guides">Accommodations</NavLink>
+            <NavLink to="/guides">Travel buddies</NavLink>
+            <NavLink to="/guides">Drivers</NavLink>
          </Box>
 
          <Box className="nav-section">
             <Box className="header">My Trips</Box>
-            <NavLink to="/plans/create">Create travel plan</NavLink>
-            <NavLink to="/plans/upcoming">Upcoming trips</NavLink>
-            <NavLink to="/plans/ended">Ended</NavLink>
+            <NavLink to="/guides">Create travel plan</NavLink>
+            <NavLink to="/guides">Upcoming trips</NavLink>
+            <NavLink to="/guides">Ended</NavLink>
          </Box>
       </Box>
    )
