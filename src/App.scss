@@ -8,6 +8,12 @@ a {
     &:hover {
         text-decoration: underline;
     }
+
+    &.disabled {
+        pointer-events: none;
+        text-decoration: none;
+        color: var(--chakra-colors-lightGray-600) !important;
+    }
 }
 
 .video-responsive {

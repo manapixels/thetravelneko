@@ -11,6 +11,12 @@ import {
    ModalFooter,
    ModalHeader,
    ModalOverlay,
+   Avatar,
+   Tabs,
+   Tab,
+   TabList,
+   TabPanels,
+   TabPanel,
 } from '@chakra-ui/react'
 import styled from 'styled-components'
 
@@ -108,14 +114,14 @@ const ProfileListItem = ({ profile }: { profile: ProfileType }) => {
       name,
       bio,
       location,
-      timeZoneUtc,
+      timeZoneUtc = dummyTimeZoneUtc,
       website,
       twitterUrl,
       picture: picObject,
       handle,
       ownedBy,
-      languages,
-      reviews,
+      languages = dummyLanguages,
+      reviews = dummyReviews,
    } = profile
 
    const picture = picObject && picObject.original && picObject.original.url
@@ -129,29 +135,40 @@ const ProfileListItem = ({ profile }: { profile: ProfileType }) => {
          borderRadius="lg"
          position="relative"
          p={8}
+         background="white"
       >
-         <Box>
+         <Box width="60%" minWidth="20rem" mr={3}>
             <Flex mb={3}>
                <Box mr={4}>
                   <AvatarWrapper onClick={onOpen}>
-                     {picture && (
+                     {picture ? (
                         <Image
                            src={`https://gateway.pinata.cloud/ipfs/${picture}`}
                            alt=""
-                           width="4.4rem"
+                           width="5rem"
+                           height="5rem"
+                        />
+                     ) : (
+                        <Avatar
+                           width="5rem"
+                           height="5rem"
+                           name={name}
+                           bg="lightGray.500"
                         />
                      )}
                      <Play />
                      <Box className="overlay"></Box>
                   </AvatarWrapper>
-                  <Box color="lightGray.900" fontSize="md">
-                     @{handle}
-                  </Box>
                </Box>
                <Box>
-                  <Box fontSize="110%" mb={1}>
-                     {name}
-                  </Box>
+                  <Flex mb={1} alignItems="center">
+                     <Box fontSize="110%" mr={2}>
+                        {name}
+                     </Box>
+                     <Box color="lightGray.900" fontSize="md">
+                        @{handle}
+                     </Box>
+                  </Flex>
                   <Flex
                      color="lightGray.900"
                      alignItems="center"
@@ -192,7 +209,11 @@ const ProfileListItem = ({ profile }: { profile: ProfileType }) => {
                         </Box>
                      </Flex>
                   )}
-                  <Flex alignItems="center">
+                  <Flex
+                     alignItems="center"
+                     flexWrap="nowrap"
+                     whiteSpace="nowrap"
+                  >
                      {languages &&
                         languages.map((l) => (
                            <Flex alignItems="center" mr={2} key={l.name}>
@@ -223,8 +244,19 @@ const ProfileListItem = ({ profile }: { profile: ProfileType }) => {
 
             {bio && <Box fontSize="md">{bio}</Box>}
          </Box>
-         <Box width="100rem" p={4}>
-            <YouTubeEmbed embedId="aWHhzUjVS84" />
+         <Box width="40%">
+            <Tabs>
+               <TabList>
+                  <Tab>Video Intro</Tab>
+                  <Tab>Availability</Tab>
+               </TabList>
+               <TabPanels>
+                  <TabPanel p={4}>
+                     <YouTubeEmbed embedId="xiZcGjn4Yko" />
+                  </TabPanel>
+                  <TabPanel p={4}></TabPanel>
+               </TabPanels>
+            </Tabs>
          </Box>
 
          <SideButtonsWrapper>
@@ -252,6 +284,16 @@ const ProfileListItem = ({ profile }: { profile: ProfileType }) => {
          </Modal>
       </Flex>
    )
+}
+
+const dummyTimeZoneUtc = 8
+const dummyLanguages = [
+   { name: 'English', level: 5 },
+   { name: 'Mandarin Chinese', level: 4 },
+]
+const dummyReviews = {
+   count: 11,
+   rating: 4,
 }
 
 export default ProfileListItem

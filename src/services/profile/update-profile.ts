@@ -1,8 +1,10 @@
 import { gql } from '@apollo/client/core'
+import { prettyJSON } from '../../helpers/prettyJSON'
 import { apolloClient } from '../apollo-client'
 import { login } from '../authentication/login'
 import { PROFILE_ID } from '../config'
 import { getAddressFromSigner } from '../ethers.service'
+import { pollUntilIndexed } from '../indexer/has-transaction-been-indexed'
 
 const UPDATE_PROFILE = `
   mutation($request: UpdateProfileRequest!) { 
@@ -54,7 +56,7 @@ export const updateProfile = async (
 
    await login(address)
 
-   await updateProfileRequest({
+   const updateProfileResult = await updateProfileRequest({
       profileId,
       name,
       bio,
@@ -62,5 +64,9 @@ export const updateProfile = async (
       website,
       twitterUrl,
       coverPicture,
-   })
+   }).catch((error) => console.log(error))
+
+   if (updateProfileResult) {
+      prettyJSON('update profile: result', updateProfileResult.data)
+   }
 }

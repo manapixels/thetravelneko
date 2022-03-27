@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client/core';
 import { apolloClient } from '../apollo-client';
 import { prettyJSON } from '../../helpers/prettyJSON';
+import { getAddressFromSigner } from '../ethers.service';
 
 const DOES_FOLLOW = `
   query($request: DoesFollowRequest!) {
@@ -25,11 +26,14 @@ const doesFollowRequest = (
   });
 };
 
-export const doesFollow = async () => {
+export const doesFollow = async (profileId: string) => {
+
+  const address = getAddressFromSigner()
+
   const followInfos = [
     {
-      followerAddress: '0xEEA0C1f5ab0159dba749Dc0BAee462E5e293daaF',
-      profileId: '0x02',
+      followerAddress: address,
+      profileId,
     },
   ];
 

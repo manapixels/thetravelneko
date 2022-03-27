@@ -258,7 +258,7 @@ export const theme = extendTheme(
             baseStyle: {
                fontWeight: 'normal',
                _hover: {
-                  boxShadow: '0 0 1px 1px var(--chakra-colors-neutral-300)',
+                  boxShadow: '1px 1px 1px 2px var(--chakra-colors-darkGray-700)',
                },
             },
             variants: {

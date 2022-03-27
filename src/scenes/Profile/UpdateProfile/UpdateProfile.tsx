@@ -64,6 +64,7 @@ const UpdateProfile = () => {
          }
       }
       handleGetProfile()
+      document.title = `thetravelneko · Update Profile · ${handleParam}`;
    }, [])
 
    const handleUpdatePhoto = async (ipfshash: string) => {
@@ -87,7 +88,6 @@ const UpdateProfile = () => {
       if (profileId) {
          setIsFetching(true)
          let result = await updateProfile(profileId, name, bio, location)
-         console.log('updateProfile', result)
 
          toast({
             title: 'Profile updated',
@@ -152,7 +152,7 @@ const UpdateProfile = () => {
             <FormLabel>Username</FormLabel>
             <Input
                type="text"
-               placeholder="siameseocici"
+               placeholder="thetravelneko"
                d="inline-block"
                width="auto"
                size="lg"
@@ -165,7 +165,7 @@ const UpdateProfile = () => {
             <FormLabel>Name</FormLabel>
             <Input
                type="text"
-               placeholder="Siamese 'Kawaii' Ocici"
+               placeholder="Your display name"
                value={name}
                onChange={(e) => setName(e.target.value)}
                minWidth="20rem"

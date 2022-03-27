@@ -79,7 +79,7 @@ export const createProfile = async (
 
       console.log('profile id', BigNumber.from(profileId).toHexString())
 
-      return result.data
+      return BigNumber.from(profileId).toHexString()
    } else {
       console.log('create-profile error')
    }

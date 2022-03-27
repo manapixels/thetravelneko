@@ -19,6 +19,7 @@ import { updateProfile } from '../../../services/profile/update-profile'
 import { getProfiles } from '../../../services/profile/get-profiles'
 import { countryList } from '../../../constants'
 import UploadImage from './components/UploadImage'
+import { setProfileImageUriNormal } from '../../../services/profile/set-profile-image-uri-normal'
 
 const timeZones = getTimeZones()
 
@@ -39,16 +40,18 @@ const CreateProfile = () => {
    const handleCreateProfile = async () => {
       setIsFetching(true)
       const profilePictureUri = picture || ''
-      let result = await createProfile(handle, profilePictureUri)
-      console.log(result)
+      let profileId = await createProfile(handle, profilePictureUri)
 
-      let profileId = await handleGetProfile()
-
-      result = await updateProfile(profileId, name, bio, location)
-      console.log(result)
+      if (profileId) {
+         let result = await updateProfile(profileId, name, bio, location)
+         if (picture) {
+            result = await setProfileImageUriNormal(profileId, picture)
+         }
+         console.log(result)
+      }
 
       toast({
-         title: 'Profile updated',
+         title: 'Profile created',
          status: 'success',
          duration: 5000,
          position: 'top',
@@ -60,21 +63,10 @@ const CreateProfile = () => {
       setIsFetching(false)
    }
 
-   const handleGetProfile = async () => {
-      const result = await getProfiles({ handles: [handle] })
-      if (
-         result &&
-         result.profiles &&
-         result.profiles.items &&
-         result.profiles.items[0]
-      ) {
-         return result.profiles.items[0].id
-      }
-   }
-
    useEffect(() => {
       const timezoneOffset = new Date().getTimezoneOffset()
       setTimeZoneUtc((timezoneOffset / 60) * -1)
+      document.title = `thetravelneko · Create Profile`
    }, [])
 
    useEffect(() => {
@@ -104,7 +96,7 @@ const CreateProfile = () => {
             <FormLabel>Username</FormLabel>
             <Input
                type="text"
-               placeholder="siameseocici"
+               placeholder="thetravelneko"
                d="inline-block"
                width="auto"
                size="lg"
@@ -117,7 +109,7 @@ const CreateProfile = () => {
             <FormLabel>Name</FormLabel>
             <Input
                type="text"
-               placeholder="Siamese 'Kawaii' Ocici"
+               placeholder="Your display name"
                value={name}
                onChange={(e) => setName(e.target.value)}
                minWidth="20rem"

@@ -1,7 +1,6 @@
 import { gql } from '@apollo/client/core';
 import { apolloClient } from '../apollo-client';
 import { login } from '../authentication/login';
-import { argsBespokeInit } from '../../helpers/argsBespokeInit';
 import { getAddressFromSigner, signedTypeData, splitSignature } from '../ethers.service';
 import { lensHub } from '../lens-hub';
 
@@ -46,7 +45,7 @@ const createFollowTypedData = (followRequestInfo: any) => {
   });
 };
 
-export const follow = async (profileId: string = '0x12') => {
+export const follow = async (profileId: string) => {
   const address = getAddressFromSigner();
   console.log('follow: address', address);
 

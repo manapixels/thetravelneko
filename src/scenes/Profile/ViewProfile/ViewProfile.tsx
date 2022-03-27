@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
+   Avatar,
    Box,
    Image,
    Flex,
@@ -9,6 +10,10 @@ import {
    Link,
    Text,
    Divider,
+   Spinner,
+   useToast,
+   AvatarBadge,
+   Tag,
 } from '@chakra-ui/react'
 import { useParams } from 'react-router-dom'
 import Calendar from 'react-calendar'
@@ -26,6 +31,7 @@ import { ReactComponent as BadgeGoogleLocalGuide } from './images/Badge_GoogleLo
 import { ReactComponent as BadgeNekoguide } from './images/Badge_Nekoguide.svg'
 import { ReactComponent as BadgeVerifiedUser } from './images/Badge_VerifiedUser.svg'
 import worldMap from './images/worldmap.png'
+import mazeBg from './images/mazeBg.png'
 import { getProfiles } from '../../../services/profile/get-profiles'
 import { ProfileType } from '../../../types/Profile'
 import {
@@ -34,6 +40,9 @@ import {
    calcCurrTimeInTimeZone,
 } from '../../../helpers/date'
 import { truncateAddress } from '../../../helpers/truncateString'
+import { follow } from '../../../services/follow/follow'
+import { doesFollow } from '../../../services/follow/does-follow'
+import { unfollow } from '../../../services/follow/unfollow'
 
 const today = new Date()
 const currMonth = today.getMonth()
@@ -42,14 +51,27 @@ const oneYearBeforeNow = subYears(today, 1)
 const disabledRanges = [[oneYearBeforeNow, today]]
 
 const CoverImage = styled.div`
-   background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,1) 100%), url(${worldMap});
-   height: 13rem;
+   /* background: linear-gradient(
+         180deg,
+         rgba(255, 255, 255, 0) 0%,
+         rgba(255, 255, 255, 0) 50%,
+         rgba(255, 255, 255, 1) 100%
+      ),
+      url(${worldMap}); */
+   background: linear-gradient(
+         135deg,
+         rgba(0, 0, 0, 0) 0%,
+         rgba(0, 0, 0, 0) 50%,
+         rgba(30, 30, 30, 1) 100%
+      ),
+      url(${mazeBg}) repeat;
+   height: 11rem;
    border-radius: var(--chakra-radii-lg);
 `
 const InfoSection = styled.div`
    display: flex;
    align-items: center;
-   margin-bottom: .5rem;
+   margin-bottom: 0.5rem;
 `
 const InfoSectionTitle = styled.div`
    width: 10rem;
@@ -149,25 +171,12 @@ const reviews = {
 
 const ViewProfile = () => {
    let { handle: handleParam } = useParams()
+   const toast = useToast()
+
    const [profile, setProfile] = useState<ProfileType>()
    const [date, setDate] = useState(new Date())
-
-   useEffect(() => {
-      const handleGetProfile = async () => {
-         if (handleParam !== undefined) {
-            const result = await getProfiles({ handles: [handleParam] })
-            if (
-               result &&
-               result.profiles &&
-               result.profiles.items &&
-               result.profiles.items[0]
-            ) {
-               setProfile(result.profiles.items[0])
-            }
-         }
-      }
-      handleGetProfile()
-   }, [handleParam])
+   const [isFetching, setIsFetching] = useState(false)
+   const [isFollowing, setIsFollowing] = useState(false)
 
    const {
       id,
@@ -185,14 +194,81 @@ const ViewProfile = () => {
    } = profile || {}
    const picture = picObject && picObject.original && picObject.original.url
    const {
-      totalFollowers,
-      totalFollowing,
+      totalFollowers = 0,
+      totalFollowing = 0,
       totalPosts,
       totalComments,
       totalMirrors,
       totalPublications,
       totalCollects,
    } = stats || {}
+
+   useEffect(() => {
+      handleGetProfile()
+      handleGetDoesFollow()
+      document.title = `thetravelneko · ${handleParam}`
+   }, [handleParam, id])
+
+   const handleGetProfile = async () => {
+      if (handleParam !== undefined) {
+         const result = await getProfiles({ handles: [handleParam] })
+         if (
+            result &&
+            result.profiles &&
+            result.profiles.items &&
+            result.profiles.items[0]
+         ) {
+            setProfile(result.profiles.items[0])
+         }
+      }
+   }
+
+   const handleGetDoesFollow = async () => {
+      if (id !== undefined) {
+         const result = await doesFollow(id)
+         console.log('fetched handleGetDoesFollow', result)
+         if (result && result.doesFollow && result.doesFollow[0]) {
+            setIsFollowing(result.doesFollow[0].follows)
+         }
+      }
+   }
+
+   const handleFollow = async () => {
+      if (id) {
+         setIsFetching(true)
+         let result = await follow(id)
+         console.log('follow', result)
+
+         toast({
+            title: `Followed ${handle}`,
+            status: 'success',
+            duration: 5000,
+            position: 'top',
+            isClosable: true,
+         })
+         setIsFetching(false)
+
+         setIsFollowing(true)
+      }
+   }
+
+   const handleUnfollow = async () => {
+      if (id) {
+         setIsFetching(true)
+         let result = await unfollow(id)
+         console.log('unfollow', result)
+
+         toast({
+            title: `Unfollowed ${handle}`,
+            status: 'success',
+            duration: 5000,
+            position: 'top',
+            isClosable: true,
+         })
+         setIsFetching(false)
+         setIsFollowing(false)
+      }
+   }
 
    console.log(profile)
 
@@ -213,41 +289,50 @@ const ViewProfile = () => {
             borderRadius="xl"
             background="white"
             position="relative"
+            maxW="3xl"
          >
             <CoverImage />
 
             <Box px={12} pb={12}>
-               {picture && (
-                  <Image
-                     src={`https://gateway.pinata.cloud/ipfs/${picture}`}
-                     alt=""
-                     width="5rem"
-                     borderRadius="50%"
-                  />
-               )}
+               <Avatar
+                  size="xl"
+                  name={handleParam}
+                  bg="lightGray.500"
+                  marginTop="calc(var(--chakra-sizes-24)/-3)"
+                  src={
+                     picture
+                        ? `https://gateway.pinata.cloud/ipfs/${picture}`
+                        : ''
+                  }
+               >
+                  <AvatarBadge bg="success.400" boxSize=".8em" />
+               </Avatar>
                <Flex justifyContent="space-between" mt={3}>
                   <Box mb={5}>
-                     <Flex alignItems="center" mb={2}>
-                        <Box fontSize="2xl" mr={2} fontWeight="bold" color="darkGray.700">
+                     <Flex alignItems="center" mb={1}>
+                        <Box
+                           fontSize="2xl"
+                           mr={2}
+                           fontWeight="bold"
+                           color="darkGray.700"
+                        >
                            {name}
                         </Box>
-                        <Box fontSize="sm" color="lightGray.900">
+                        <Box fontSize="md" color="lightGray.900">
                            @{handle}
                         </Box>
                      </Flex>
                      <Flex
                         color="lightGray.900"
                         alignItems="center"
-                        fontSize="sm"
+                        fontSize="md"
                         mb={1}
                      >
                         <MapPin
                            height="1rem"
                            stroke="var(--chakra-colors-lightGray-500)"
                         />
-                        <Box>
-                           {location}
-                        </Box>
+                        <Box>{location}</Box>
                         <Box>
                            {timeZoneUtc &&
                               `(${formatAMPM(
@@ -263,21 +348,43 @@ const ViewProfile = () => {
                      <Button mr={2} px={1}>
                         <Export width="1.5rem" />
                      </Button>
-                     <Button mr={2} px={1}>
-                        <Heart width="1.5rem" />
+                     <Button
+                        mr={2}
+                        px={1}
+                        onClick={() =>
+                           isFollowing ? handleUnfollow() : handleFollow()
+                        }
+                        disabled={isFetching}
+                     >
+                        {isFetching ? (
+                           <Spinner />
+                        ) : (
+                           <Heart
+                              width="1.5rem"
+                              fill={isFollowing ? 'black' : 'none'}
+                           />
+                        )}
+                        {!isFetching &&
+                           (isFollowing ? totalFollowers + 1 : totalFollowers)}
                      </Button>
                      <Link href={`/profile/${handle}/update`}>
-                     <Button variant="outline">
-                        Edit Profile
-                     </Button>
+                        <Button variant="outline">Edit Profile</Button>
                      </Link>
                   </Box>
                </Flex>
 
+               <Box mb="5">
+                  <Tag size="md" variant="subtle" colorScheme="twitter">
+                     🚩 Local Tour Guide
+                  </Tag>
+               </Box>
+
                <InfoSection>
                   <InfoSectionTitle>Tours Organised</InfoSectionTitle>
                   <Flex alignItems="center">
-                     <Box fontSize="lg" mr={4}>4</Box>
+                     <Box fontSize="lg" mr={4}>
+                        4
+                     </Box>
                      <Box color="lightGray.700" fontSize="sm">
                         First tour: Jan 1, 2022
                      </Box>
@@ -342,18 +449,35 @@ const ViewProfile = () => {
                <InfoSection>
                   <InfoSectionTitle>Badges</InfoSectionTitle>
                   <Flex alignItems="center">
-                     <Box mr={3}><BadgeGoogleLocalGuide /></Box>
-                     <Box mr={3}><BadgeNekoguide /></Box>
-                     <Box><BadgeVerifiedUser /></Box>
+                     <Box mr={3}>
+                        <BadgeGoogleLocalGuide />
+                     </Box>
+                     <Box mr={3}>
+                        <BadgeNekoguide />
+                     </Box>
+                     <Box>
+                        <BadgeVerifiedUser />
+                     </Box>
                   </Flex>
                </InfoSection>
 
                <Divider my={8} />
 
                <Box>
-                  <Flex justifyContent="space-between" alignItems="center" mb={5}>
+                  <Flex
+                     justifyContent="space-between"
+                     alignItems="center"
+                     mb={5}
+                  >
                      <Heading size="md">About me</Heading>
-                     <Box color="lightGray.900" fontSize="sm">Owned by <Link href={`https://polygonscan.com/address/${ownedBy}`}>{truncateAddress(ownedBy)}</Link></Box>
+                     <Box color="lightGray.900" fontSize="sm">
+                        Owned by{' '}
+                        <Link
+                           href={`https://polygonscan.com/address/${ownedBy}`}
+                        >
+                           {truncateAddress(ownedBy)}
+                        </Link>
+                     </Box>
                   </Flex>
                   <Text>{bio}</Text>
                </Box>
@@ -399,7 +523,7 @@ const ViewProfile = () => {
                   'Nov',
                   'Dec',
                ].map((month, i) => (
-                  <MonthAvailability>
+                  <MonthAvailability key={month}>
                      <Box className="label">{month}</Box>
                      <Box
                         className={`colour-indicator ${

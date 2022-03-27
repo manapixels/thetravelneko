@@ -26,7 +26,7 @@ const defaultProps = {
       {
          id: 'MY',
          name: 'Malaysia',
-         lat: 1.481218,
+         lat: 2,
          lng: 103.444205,
          count: 360,
       },
@@ -34,7 +34,7 @@ const defaultProps = {
          id: 'ID',
          name: 'Indonesia',
          lat: 1.05218,
-         lng: 104.144205,
+         lng: 103.944205,
          count: 1427,
       },
    ],

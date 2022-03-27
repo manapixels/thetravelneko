@@ -45,14 +45,12 @@ const createUnfollowTypedData = (profile: string) => {
   });
 };
 
-export const unfollow = async () => {
+export const unfollow = async (unfollowProfileId: string) => {
   const address = getAddressFromSigner();
   console.log('unfollow: address', address);
 
   await login(address);
 
-  // hard coded to make the code example clear
-  const unfollowProfileId = '0x0338a3';
   const result = await createUnfollowTypedData(unfollowProfileId);
   console.log('unfollow: result', result);
 

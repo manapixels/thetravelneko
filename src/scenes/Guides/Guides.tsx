@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Flex, Button, Image, Input } from '@chakra-ui/react'
 import styled from 'styled-components'
 
@@ -10,11 +10,13 @@ import FlyingSaucer from './images/FlyingSaucer.svg'
 import MapPin from './images/MapPin.svg'
 import MagnifyingGlass from './images/MagnifyingGlass.svg'
 import Funnel from './images/Funnel.svg'
+import { getProfiles } from '../../services/profile/get-profiles'
 
 const SearchWrapper = styled.div`
    display: flex;
    border: 1px solid var(--chakra-colors-black);
    border-radius: var(--chakra-radii-xl);
+   background: white;
 
    input {
       border: none;
@@ -37,11 +39,28 @@ const Guides = () => {
    const [searchInput, setSearchInput] = useState('')
    const [fromDate, setFromDate] = useState('')
    const [toDate, setToDate] = useState('')
+   const [profiles, setProfiles] = useState([])
+
+   useEffect(() => {
+      document.title = `thetravelneko · Find local guides`
+   }, [])
+
+   useEffect(() => {
+      const handleGetProfile = async () => {
+         const result = await getProfiles()
+         if (result && result.profiles && result.profiles.items) {
+            setProfiles(result.profiles.items)
+         }
+      }
+      handleGetProfile()
+   }, [address])
 
    return (
       <Flex>
          <Box flexGrow={2} width="30vw" mr={8}>
-            <Map setAddress={setAddress} />
+            <Box position="sticky" top="2rem">
+               <Map setAddress={setAddress} />
+            </Box>
          </Box>
          <Box flexGrow={1}>
             <Flex mb={6}>
@@ -54,7 +73,7 @@ const Guides = () => {
                      onChange={(e) => setAddress(e.target.value)}
                      fontSize="2xl"
                      fontWeight="bold"
-                     width="12rem"
+                     width="10rem"
                   />
                   <Box alignItems="center" d="flex" mr={5}>
                      <Button size="sm" p={1} variant="outline">
@@ -67,7 +86,7 @@ const Guides = () => {
                      placeholder="From"
                      value={fromDate}
                      onChange={(e) => setFromDate(e.target.value)}
-                     width="8.5rem"
+                     width="8rem"
                   />
                   <Box alignItems="center" d="flex">
                      {' · '}
@@ -77,7 +96,8 @@ const Guides = () => {
                      placeholder="To"
                      value={toDate}
                      onChange={(e) => setToDate(e.target.value)}
-                     width="8.5rem"
+                     width="8rem"
+                     borderRadius="xl"
                   />
                </SearchWrapper>
 
@@ -85,38 +105,25 @@ const Guides = () => {
                   <Image src={MagnifyingGlass} alt="" />
                </Button>
                <Button variant="outline" ml={4} onClick={() => {}}>
-                  <Image src={Funnel} alt="" width="20px" height="20px" mr={1} />Filter
+                  <Image
+                     src={Funnel}
+                     alt=""
+                     width="20px"
+                     height="20px"
+                     mr={1}
+                  />
+                  Filter
                </Button>
             </Flex>
-            <ProfileListItem profile={dummyProfile} />
+
+            {profiles.map((p, i) => (
+               <Box key={i} mb={6}>
+                  <ProfileListItem profile={p} />
+               </Box>
+            ))}
          </Box>
       </Flex>
    )
-}
-
-const dummyProfile = {
-   id: '123',
-   name: 'Lora Srna',
-   bio: "Hello, My name is Lora Srna. I'm from Northern Croatia, and a local of Zagreb and Varazdin. I've been working as a tour guide for a number of years now, guiding to every part of Croatia, as well as other countries in the region, such as Bosnia, Slovenia, Montenegro, and Austria.",
-   location: 'Zagreb, Croatia',
-   timeZoneUtc: 1,
-   website: 'https://lorasrna.com',
-   twitterUrl: 'https://twitter.com/lorasrna',
-   picture: {
-      original: {
-         url: 'https://i.imgur.com/M2CoXGx.jpg'
-      }
-   },
-   handle: 'lorasrna',
-   ownedBy: '0xe7804c37c13166fF0b37F5aE0BB07A3aEbb6e245',
-   languages: [
-      { name: 'Croatian', level: 5 },
-      { name: 'English', level: 3 },
-   ],
-   reviews: {
-      count: 11,
-      rating: 4,
-   },
 }
 
 export default Guides
